@@ -385,6 +385,63 @@ function OrderSuccess({ onContinue }) {
   );
 }
 
+// ── Rotating Headline ───────────────────────────────────────
+const HEADLINES = [
+  { text: "What are you looking to buy?", lang: "🌍 English" },
+  { text: "Weytin you wan buy?", lang: "🇳🇬 Pidgin" },
+  { text: "Kí le fẹ́ rà, mà?", lang: "🇳🇬 Yorùbá" },
+  { text: "Nna, Follow me buy market", lang: "🇳🇬 Pidgin" },
+];
+
+function RotatingHeadline() {
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState("in"); // in | hold | out
+
+  useEffect(() => {
+    let t;
+    if (phase === "in") {
+      t = setTimeout(() => setPhase("hold"), 600);
+    } else if (phase === "hold") {
+      t = setTimeout(() => setPhase("out"), 2400);
+    } else if (phase === "out") {
+      t = setTimeout(() => {
+        setIdx(i => (i + 1) % HEADLINES.length);
+        setPhase("in");
+      }, 500);
+    }
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  const h = HEADLINES[idx];
+  const animStyle = phase === "in"
+    ? { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }
+    : phase === "hold"
+    ? { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }
+    : { opacity: 0, transform: "translateY(-18px) scale(0.97)", filter: "blur(4px)" };
+
+  return (
+    <div style={{ position: "relative", minHeight: 64 }}>
+      <h1 style={{
+        fontSize: 40, fontWeight: 800, color: "#1E1B4B", margin: 0, letterSpacing: -1,
+        transition: "all 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        ...animStyle,
+      }}>
+        {h.text}
+      </h1>
+      <div style={{
+        display: "inline-block", marginTop: 6, padding: "3px 10px",
+        background: "rgba(99,102,241,0.08)", borderRadius: 8,
+        fontSize: 11, fontWeight: 600, color: "#6366F1", letterSpacing: 0.3,
+        transition: "all 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
+        opacity: phase === "out" ? 0 : 0.8,
+        transform: phase === "out" ? "translateY(-10px)" : "translateY(0)",
+      }}>
+        {h.lang}
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ────────────────────────────────────────────────
 function Shop() {
   const { count, clear } = useCart();
@@ -452,7 +509,7 @@ function Shop() {
         <div style={{ textAlign: "center", paddingTop: searched ? 24 : 56, paddingBottom: searched ? 16 : 0, transition: "padding 0.4s" }}>
           {!searched && (
             <div style={{ animation: "fadeUp 0.4s ease" }}>
-              <h1 style={{ fontSize: 40, fontWeight: 800, color: "#1E1B4B", margin: 0, letterSpacing: -1 }}>What are you looking to buy?</h1>
+              <RotatingHeadline />
               <p style={{ fontSize: 16, color: "#6B7280", marginTop: 8 }}>Describe what you need — our AI understands natural language</p>
             </div>
           )}

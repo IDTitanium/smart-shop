@@ -382,7 +382,7 @@ function Shop() {
   const inputRef = useRef(null);
   const abortRef = useRef(null);
 
-  const clearSearch = () => { setQuery(""); setResults([]); setSearched(false); setError(null); setSearchTime(null); inputRef.current?.focus(); };
+  const clearSearch = () => { setQuery(""); setResults([]); setSearched(false); setError(null); setSearchTime(null); };
 
   const doSearch = useCallback(async (q) => {
     const sq = q || query;
